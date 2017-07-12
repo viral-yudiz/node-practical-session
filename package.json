@@ -1,0 +1,27 @@
+{
+  "name": "session1",
+  "version": "1.0.0",
+  "description": "Practice Session 1 ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viral-yudiz/session1.git"
+  },
+  "keywords": [
+    "Session1"
+  ],
+  "author": "Viral Barot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/viral-yudiz/session1/issues"
+  },
+  "homepage": "https://github.com/viral-yudiz/session1#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mysql": "^2.13.0"
+  }
+}
