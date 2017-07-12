@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const express = require('express');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 
 const Routes = require("./config/routes");
 var Admin = Routes.Admin;
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
+app.use(expressValidator());
 
 app.use('/api/admin', Admin);
 app.use('/api/user', User);

@@ -1,4 +1,6 @@
 var db = require('../config/database');
+var util = require('util');
+
 class User {
 
     all(callback) {
@@ -50,55 +52,92 @@ class User {
     }
 
     login(req, callback) {
-        db.query("CALL userLogin(?,?)", [req.body.email, req.body.password], (err, result, fields) => {
+        req.checkBody('email', 'Email is required').notEmpty();
+        req.checkBody('email', 'Please Provide Valid Email').isEmail();
+        req.checkBody('password', 'Password is required').notEmpty();
 
-            if (err) {
+        req.getValidationResult().then(function (result) {
+            if (!result.isEmpty()) {
                 callback({
-                    message: "Internal Server Error",
-                    status: 500
-                });
-
-            } else if (result[0][0]) {
-
-                callback({
-                    status: 200,
-                    data: result[0][0],
-                    message: "Login Successfull"
+                    message: "Validation Errors",
+                    data: result.array(),
+                    status: 400
                 });
 
             } else {
 
-                callback({
-                    message: "Wrong Email or Password",
-                    status: 400
+                db.query("CALL userLogin(?,?)", [req.body.email, req.body.password], (err, result, fields) => {
+
+                    if (err) {
+                        callback({
+                            message: "Internal Server Error",
+                            status: 500
+                        });
+
+                    } else if (result[0][0]) {
+
+                        callback({
+                            status: 200,
+                            data: result[0][0],
+                            message: "Login Successfull"
+                        });
+
+                    } else {
+
+                        callback({
+                            message: "Wrong Email or Password",
+                            status: 400
+                        });
+                    }
                 });
             }
+
         });
     }
 
     save(req, callback) {
-        db.query("CALL addUser(?,?,?,?)", [req.body.firstname, req.body.lastname, req.body.email, req.body.password], (err, result, fields) => {
+        req.checkBody('firstname', 'First Name is required').notEmpty();
+        req.checkBody('firstname', 'Please enter valid First Name').isAlpha();
+        req.checkBody('lastname', 'Last Name is required').notEmpty();
+        req.checkBody('lastname', 'Please enter valid Last Name').isAlpha();
+        req.checkBody('email', 'Email is required').notEmpty();
+        req.checkBody('email', 'Please Provide Valid Email').isEmail();
+        req.checkBody('password', 'Password is required').notEmpty();
 
-            if (!err) {
-                if (result[0][0]) {
-                    callback({
-                        data: result[0][0],
-                        message: "User Added Successfully",
-                        status: 200
-                    });
-                } else {
-                    callback({
-                        message: "can't Add User",
-                        status: 400
-                    });
-                }
-            } else {
-
+        req.getValidationResult().then(function (result) {
+            if (!result.isEmpty()) {
                 callback({
-                    message: "DataBase Error",
-                    status: 500
+                    message: "Validation Errors",
+                    data: result.array(),
+                    status: 400
+                });
+
+            } else {
+                db.query("CALL addUser(?,?,?,?)", [req.body.firstname, req.body.lastname, req.body.email, req.body.password], (err, result, fields) => {
+
+                    if (!err) {
+                        if (result[0][0]) {
+                            callback({
+                                data: result[0][0],
+                                message: "User Added Successfully",
+                                status: 200
+                            });
+                        } else {
+                            callback({
+                                message: "can't Add User",
+                                status: 400
+                            });
+                        }
+                    } else {
+
+                        callback({
+                            message: "DataBase Error",
+                            status: 500
+                        });
+                    }
                 });
             }
+
         });
     }
 
